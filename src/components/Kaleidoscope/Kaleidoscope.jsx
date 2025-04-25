@@ -10,7 +10,19 @@ const COLORS = [
     '#D4A5A5'  // Rosa pálido
   ];
   
+const generateRandomPoint = (radius) => {
+    const angle = Math.random() * 2 * Math.PI;
+    const r = radius *Math.sqrt(Math.random());
+    return {
+        x: r * Math.cos(angle),
+        y: r * Math.sin(angle)
+    }
+}
+
   const Kaleidoscope = () => {
+
+    const points = Array.from({length: 5}, () => generateRandomPoint(250))
+    console.log(points)
     return (
       <div style={{ 
         position: 'fixed',
@@ -42,6 +54,17 @@ const COLORS = [
           stroke="white"
           strokeWidth="1"
         />
+        {points.map((point, index) => {
+            return (
+            <circle
+            key={index}
+            cx={point.x}
+            cy={point.y}
+            r="5"
+            fill={COLORS[index % COLORS.length]}
+            />
+            )
+        })}
         </svg>
       </div>
     );
