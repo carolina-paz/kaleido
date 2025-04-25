@@ -1,10 +1,13 @@
-import TestFirebase from './components/TestFirebase/TestFirebase'
+
+import './App.css'
+import Kaleidoscope from './components/Kaleidoscope/Kaleidoscope'
 
 function App() {
+
   return (
-    <div>
-      <TestFirebase />
-    </div>
+   <div>
+    <Kaleidoscope />
+   </div>
   )
 }
 
