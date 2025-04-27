@@ -19,6 +19,20 @@ const generateRandomPoint = (radius) => {
     }
 }
 
+const generateRandomPolygon = (radius, sides = 3) => {
+    const points = [];
+    const centerAngle = Math.random() * 2 * Math.PI;
+    const size = radius * (0.1 + Math.random() * 0.2); // Tamaño aleatorio entre 10% y 30% del radio
+    
+    for (let i = 0; i < sides; i++) {
+        const angle = centerAngle + (i * 2 * Math.PI / sides);
+        const x = size * Math.cos(angle);
+        const y = size * Math.sin(angle);
+        points.push({x, y});
+    }
+    return points;
+}
+
 const createSymmetricElements = (point, segments = 6) => {
     const elements = [];
     const angleStep = (2 * Math.PI) / segments;
@@ -31,16 +45,38 @@ const createSymmetricElements = (point, segments = 6) => {
     return elements;
 }
 
+const createSymmetricPolygons = (polygon, segments = 6) => {
+    const polygons = [];
+    const angleStep = (2 * Math.PI) / segments;
+    
+    for (let i = 0; i < segments; i++) {
+        const angle = i * angleStep;
+        const rotatedPolygon = polygon.map(point => {
+            const x = point.x * Math.cos(angle) - point.y * Math.sin(angle);
+            const y = point.x * Math.sin(angle) + point.y * Math.cos(angle);
+            return {x, y};
+        });
+        polygons.push(rotatedPolygon);
+    }
+    return polygons;
+}
 
-
-  const Kaleidoscope = () => {
+const Kaleidoscope = () => {
     const [points, setPoints] = useState([]);
+    const [polygons, setPolygons] = useState([]);
 
     useEffect(() => {
+      // Generar puntos
       const basePoint = generateRandomPoint(250);
       const symmetricPoints = createSymmetricElements(basePoint);
       setPoints(symmetricPoints);
+
+      // Generar polígonos
+      const basePolygon = generateRandomPolygon(250, 3 + Math.floor(Math.random() * 3)); // 3-5 lados
+      const symmetricPolygons = createSymmetricPolygons(basePolygon);
+      setPolygons(symmetricPolygons);
     }, []);
+
     return (
       <div style={{ 
         width: '100%', 
@@ -57,30 +93,35 @@ const createSymmetricElements = (point, segments = 6) => {
           style={{
             maxWidth: '90vmin',
             maxHeight: '90vmin',
-            
           }}
-          
         >
-          {/* Aquí irá nuestro caleidoscopio */}
           <circle
-          cx="0"
-          cy="0"
-          r="250"
-          fill="none"
-          stroke="white"
-          strokeWidth="1"
-        />
-        { points.map((point, index) => {
-            return (
+            cx="0"
+            cy="0"
+            r="250"
+            fill="none"
+            stroke="white"
+            strokeWidth="1"
+          />
+          {points.map((point, index) => (
             <circle
-            key={index}
-            cx={point.x}
-            cy={point.y}
-            r="5"
-            fill={COLORS[index % COLORS.length]}
+              key={`point-${index}`}
+              cx={point.x}
+              cy={point.y}
+              r="5"
+              fill={COLORS[index % COLORS.length]}
             />
-            )
-        })}
+          ))}
+          {polygons.map((polygon, polygonIndex) => (
+            <polygon
+              key={`polygon-${polygonIndex}`}
+              points={polygon.map(point => `${point.x},${point.y}`).join(' ')}
+              fill={COLORS[polygonIndex % COLORS.length]}
+              fillOpacity="0.3"
+              stroke={COLORS[polygonIndex % COLORS.length]}
+              strokeWidth="1"
+            />
+          ))}
         </svg>
       </div>
     );
