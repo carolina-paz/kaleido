@@ -1,5 +1,5 @@
 // src/components/Kaleidoscope/Kaleidoscope.jsx
-//import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const COLORS = [
     '#FF6B6B', // Coral
@@ -19,17 +19,32 @@ const generateRandomPoint = (radius) => {
     }
 }
 
-  const Kaleidoscope = () => {
+const createSymmetricElements = (point, segments = 6) => {
+    const elements = [];
+    const angleStep = (2 * Math.PI) / segments;
+    for (let i = 0; i < segments ; i++) {
+        const angle = i * angleStep;
+        const x = point.x * Math.cos(angle) - point.y * Math.sin(angle);
+        const y = point.x * Math.sin(angle) + point.y * Math.cos(angle);
+        elements.push({x, y});
+    }
+    return elements;
+}
 
-    const points = Array.from({length: 5}, () => generateRandomPoint(250))
-    console.log(points)
+
+
+  const Kaleidoscope = () => {
+    const [points, setPoints] = useState([]);
+
+    useEffect(() => {
+      const basePoint = generateRandomPoint(250);
+      const symmetricPoints = createSymmetricElements(basePoint);
+      setPoints(symmetricPoints);
+    }, []);
     return (
       <div style={{ 
-        position: 'fixed',
-        top: 0,
-        left: 0,
         width: '100%', 
-        height: '100%', 
+        height: '100vh', 
         backgroundColor: 'black',
         display: 'flex',
         justifyContent: 'center',
@@ -41,9 +56,10 @@ const generateRandomPoint = (radius) => {
           viewBox="-300 -300 600 600"
           style={{
             maxWidth: '90vmin',
-            maxHeight: '90vmin'
+            maxHeight: '90vmin',
+            
           }}
-          border="1px solid white"
+          
         >
           {/* Aquí irá nuestro caleidoscopio */}
           <circle
@@ -54,7 +70,7 @@ const generateRandomPoint = (radius) => {
           stroke="white"
           strokeWidth="1"
         />
-        {points.map((point, index) => {
+        { points.map((point, index) => {
             return (
             <circle
             key={index}
